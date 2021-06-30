@@ -5,7 +5,7 @@ import { SidebarDataProf } from "./Professor/Content/SidebarDataProf";
 import { SidebarDataStudent } from "./Student/Content/SidebarDataStudent";
 import { useAuth } from "../components/Auth/Auth";
 import Quiz from "./Quiz";
-import video from "./video.mp4";
+import video from "../assets/vids/video.mp4";
 
 function Lesson() {
   const { currentUser } = useAuth();

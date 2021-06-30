@@ -1,7 +1,7 @@
 import React from "react";
 import * as HiIcons from "react-icons/hi";
 import { useAuth } from "../../Auth/Auth";
-import logo from "../../../images/logo.png";
+import logo from "../../../assets/images/logo.png";
 import "./FirstNav.css";
 
 function Navbar() {
