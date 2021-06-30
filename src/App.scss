@@ -1,0 +1,28 @@
+$theme-colors: (
+  "primary": #ff6f6b,
+);
+
+// imported files we will use from bootstrap library
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+@import "~bootstrap/scss/mixins";
+@import "~bootstrap/scss/grid";
+@import "~bootstrap/scss/utilities";
+@import "~bootstrap/scss/transitions";
+@import "~bootstrap/scss/reboot";
+@import "~bootstrap/scss/type";
+@import "~bootstrap/scss/buttons";
+@import "~bootstrap/scss/forms";
+@import "~bootstrap/scss/card";
+@import "~video-react/styles/scss/video-react";
+
+//custom styles
+.btn-primary {
+  color: white;
+}
+
+.progress-bar {
+  // this is for the bar itself
+  background-color: rgb(23, 168, 168);
+  color: white;
+}
