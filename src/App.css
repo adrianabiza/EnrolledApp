@@ -33,7 +33,7 @@
 
 .content {
   margin: 5rem 0 2rem 6rem;
-  height: 100vh;
+  /* height: 100vh; */
 }
 
 .title {
@@ -44,4 +44,5 @@
 
 .points {
   width: 32px;
+  height: 25px;
 }

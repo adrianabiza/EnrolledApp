@@ -86,7 +86,7 @@ function HomeProf() {
       <Navbar />
       <Sidebar data={SidebarDataProf} />
       <div className="content container">
-        <h1 className="title">Courses</h1>
+        <h1 className="title">Home</h1>
         <div className="m-3">
           <a
             className="btn p-0 text-primary ml-2"

@@ -16,15 +16,19 @@ function LessonCard(props) {
           <Link className="mr-2" to={`/lesson/${lesson.id}`}>
             {lesson.title}
           </Link>
-          -<div className="ml-2">{lesson.description}</div>
+          {lesson.description && (
+            <div className="ml-2"> {lesson.description}</div>
+          )}
         </div>
 
         {currentUser.email.includes("@prof") && (
-          <AiIcons.AiFillDelete
-            onClick={props.onDelete}
-            size="20"
-            className="mx-3"
-          />
+          <button className="btn btn-link">
+            <AiIcons.AiFillDelete
+              onClick={props.onDelete}
+              size="20"
+              className="mx-3"
+            />
+          </button>
         )}
       </div>
     </IconContext.Provider>

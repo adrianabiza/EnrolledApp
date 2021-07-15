@@ -32,8 +32,8 @@ function App() {
             <PrivateRoute path="/allcourses" component={AllCourses} />
             <PrivateRoute path="/home/:id" component={Course} />
             <PrivateRoute path="/lesson/:id" component={Lesson} />
-            <PrivateRoute path="/task" component={Task} />
-            <PrivateRoute path="/student/lala" component={Stud} />
+            <PrivateRoute path="/task/:id" component={Task} />
+            <PrivateRoute path="/student/:id" component={Stud} />
           </Switch>
         </AuthProvider>
       </Router>

@@ -6,6 +6,7 @@ import { useAuth } from "../../../components/Auth/Auth";
 import { SidebarDataStudent } from "./SidebarDataStudent";
 import { Alert, Container, Row, Col, Card } from "react-bootstrap";
 import img from "../../course.jpg";
+import { TextField } from "@material-ui/core";
 
 function AllCourses() {
   const [courses, setCourses] = useState([]);
@@ -43,10 +44,7 @@ function AllCourses() {
     setLoading(false);
   }
 
-  // ATTEND FUNCTION
   async function attendCourse(studentId, course) {
-    console.log(course.accessCode);
-    console.log(accessCode);
     if (course.accessCode == accessCode) {
       const attendingRef = db.doc(`Users/${studentId}/Attending/${course.id}`);
       const attendeeRef = db.doc(`Courses/${course.id}/Attendees/${studentId}`);
@@ -71,6 +69,7 @@ function AllCourses() {
       <Sidebar data={SidebarDataStudent} />
       <div className="content">
         <h1 className="title m-4">All courses</h1>
+        <TextField label="Search" className="mb-4" />
         <Container>
           <Row>
             {courses.map((course) => (

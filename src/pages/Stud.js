@@ -18,7 +18,7 @@ export default function Stud() {
       <Navbar />
       <Sidebar data={SidebarDataProf} />
       <div className="content">
-        <h2 className="title mb-3">John Student</h2>
+        <h2 className="title mb-3">Student Name</h2>
         <Container>
           <Row>
             <Col md={6}>

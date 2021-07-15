@@ -14,28 +14,27 @@ import TaskCard from "./TaskCard";
 function Course({ match }) {
   const { currentUser } = useAuth();
   const [lessons, setLessons] = useState([]);
+  const [tasks, setTasks] = useState([]);
   const [course, setCourse] = useState();
   const [loading, setLoading] = useState(false);
-  const [showForm, setShowForm] = useState(false);
+  const [showFormPost, setShowFormPost] = useState(false);
+  const [showFormTask, setShowFormTask] = useState(false);
   const [title, setTitle] = useState("");
   const [desc, setDesc] = useState("");
-
-  //hardcode
-  const task = { title: "Task 1", description: "JS functions" };
-  const obj = {
-    title: "Lesson 4",
-    description: "Flow control & variable scope",
-  };
-
   const db = firebase.firestore();
 
   const lessonRef = db
-    .collection("Lessons")
+    .collection("Posts")
+    .where("courseId", "==", match.params.id);
+
+  const taskRef = db
+    .collection("Tasks")
     .where("courseId", "==", match.params.id);
 
   useEffect(() => {
     getCourse();
     getLessons();
+    getTasks();
   }, []);
 
   function getCourse() {
@@ -64,15 +63,28 @@ function Course({ match }) {
 
   function addLessons(e) {
     e.preventDefault();
+    const id = lessons.length ? lessons.pop().id + 1 : uuidv4();
+    const newQuiz = {
+      lessonId: id,
+      id: uuidv4(),
+    };
     const newLesson = {
       courseId: match.params.id,
-      id: uuidv4(),
+      id: id,
       title: title,
       description: desc,
+      quizId: newQuiz.id,
     };
-    db.collection("Lessons")
+    db.collection("Posts")
       .doc(newLesson.id)
       .set(newLesson)
+      .catch((err) => {
+        console.error(err);
+      });
+
+    db.collection("Quizzes")
+      .doc(newQuiz.id)
+      .set(newQuiz)
       .catch((err) => {
         console.error(err);
       });
@@ -81,8 +93,59 @@ function Course({ match }) {
   }
 
   function deleteLesson(lesson) {
-    db.collection("Lessons")
+    db.collection("Posts")
       .doc(lesson.id)
+      .delete()
+      .catch((err) => {
+        console.error(err);
+      });
+
+    const quizRef = db.collection("Quizzes").where("lessonId", "==", lesson.id);
+    quizRef.get().then((res) => {
+      res.forEach((element) => {
+        element.ref.delete();
+      });
+    });
+  }
+
+  function getTasks() {
+    setLoading(true);
+    taskRef.onSnapshot((querySnapshot) => {
+      const items = [];
+      querySnapshot.forEach((doc) => {
+        items.push(doc.data());
+      });
+      setTasks(items);
+    });
+    setLoading(false);
+  }
+
+  function addTask(e) {
+    e.preventDefault();
+    const id = tasks.length ? tasks.pop().id + 100 : uuidv4();
+    var utc = new Date().toJSON().slice(0, 10).replace(/-/g, "/");
+    const newTask = {
+      courseId: match.params.id,
+      id: id,
+      title: title,
+      maxPoints: 100,
+      deadline: utc,
+      contribution: 0,
+    };
+
+    db.collection("Tasks")
+      .doc(newTask.id)
+      .set(newTask)
+      .catch((err) => {
+        console.error(err);
+      });
+    setTitle("");
+    setDesc("");
+  }
+
+  function deleteTask(task) {
+    db.collection("Tasks")
+      .doc(task.id)
       .delete()
       .catch((err) => {
         console.error(err);
@@ -109,17 +172,17 @@ function Course({ match }) {
               <a
                 className="btn p-0 text-primary ml-2"
                 onClick={() => {
-                  setShowForm(!showForm);
+                  setShowFormPost(!showFormPost);
                 }}
               >
-                Add lesson
-                {showForm ? (
+                New post
+                {showFormPost ? (
                   <BsIcons.BsChevronDown size="10" />
                 ) : (
                   <BsIcons.BsChevronRight size="10" />
                 )}
               </a>
-              {showForm && (
+              {showFormPost && (
                 <Form className="container" onSubmit={addLessons}>
                   <Form.Group as={Row} className="mb-3">
                     <Form.Label column sm="2">
@@ -140,14 +203,44 @@ function Course({ match }) {
                     </Form.Label>
                     <Col sm="10">
                       <Form.Control
-                        required
                         type="text"
                         value={desc}
                         onChange={(e) => setDesc(e.target.value)}
                       />
                     </Col>
                   </Form.Group>
-                  <Button type="submit">Add lesson</Button>
+                  <Button type="submit">Add post</Button>
+                </Form>
+              )}
+              <a
+                className="btn p-0 text-primary ml-2"
+                onClick={() => {
+                  setShowFormTask(!showFormTask);
+                }}
+              >
+                New task
+                {showFormTask ? (
+                  <BsIcons.BsChevronDown size="10" />
+                ) : (
+                  <BsIcons.BsChevronRight size="10" />
+                )}
+              </a>
+              {showFormTask && (
+                <Form className="container" onSubmit={addTask}>
+                  <Form.Group as={Row} className="mb-3">
+                    <Form.Label column sm="2">
+                      Title
+                    </Form.Label>
+                    <Col sm="10">
+                      <Form.Control
+                        required
+                        type="text"
+                        value={title}
+                        onChange={(e) => setTitle(e.target.value)}
+                      />
+                    </Col>
+                  </Form.Group>
+                  <Button type="submit">Add task</Button>
                 </Form>
               )}
             </div>
@@ -161,8 +254,16 @@ function Course({ match }) {
                 onDelete={() => deleteLesson(lesson)}
               />
             ))}
-            <TaskCard data={task}></TaskCard>
-            <LessonCard data={obj} />
+          </div>
+
+          <div className="mx-auto">
+            {tasks.map((task) => (
+              <TaskCard
+                key={task.id}
+                data={task}
+                onDelete={() => deleteTask(task)}
+              />
+            ))}
           </div>
         </div>
       )}

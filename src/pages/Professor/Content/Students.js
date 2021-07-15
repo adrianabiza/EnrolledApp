@@ -1,17 +1,60 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Navbar from "../../../components/common/Navbar/Navbar";
 import Sidebar from "../../../components/common/Sidebar/Sidebar";
 import { SidebarDataProf } from "./SidebarDataProf";
 import StudentCard from "../../StudentCard";
 import { Container, Col, Row } from "react-bootstrap";
+import { TextField } from "@material-ui/core";
+import firebase from "../../../firebase";
+import { useAuth } from "../../../components/Auth/Auth";
 
 function Students() {
-  const student1 = { firstName: "John", lastName: "Student" };
-  const student2 = { firstName: "Bryson", lastName: "Jaramillo" };
-  const student3 = { firstName: "Zarah", lastName: "Burnett" };
-  const student4 = { firstName: "Franciszek", lastName: "Hines" };
-  const student5 = { firstName: "Jason", lastName: "Booth" };
-  const student6 = { firstName: "Felix", lastName: "Dale" };
+  const { currentUser } = useAuth();
+  const [courses, setCourses] = useState([]);
+  const [students, setStudents] = useState([]);
+  const db = firebase.firestore();
+
+  useEffect(() => {
+    getCourses();
+    getStudents();
+  }, []);
+
+  function getCourses() {
+    db.collection("Courses")
+      .where("owner", "==", currentUser.email)
+      .onSnapshot((querySnapshot) => {
+        const items = [];
+        querySnapshot.forEach((doc) => {
+          items.push(doc.data());
+        });
+        setCourses(items);
+      });
+  }
+
+  function getStudents() {
+    db.collection("Users")
+      .where("isProf", "==", "false")
+      .onSnapshot((querySnapshot) => {
+        const items = [];
+        querySnapshot.forEach((doc) => {
+          items.push(doc.data());
+        });
+        setStudents(items);
+      });
+  }
+
+  const handleDelete = (student) => {
+    courses.forEach((course) => {
+      db.collection("Students")
+        .doc(student.id)
+        .collection("Attending")
+        .doc(course.id)
+        .delete()
+        .catch((err) => {
+          console.error(err);
+        });
+    });
+  };
 
   return (
     <>
@@ -19,26 +62,17 @@ function Students() {
       <Sidebar data={SidebarDataProf} />
       <div className="content">
         <h1 className="title">Students</h1>
+        <TextField label="Search" className="mb-4" />
         <Container>
           <Row>
-            <Col md={3}>
-              <StudentCard data={student1} />
-            </Col>
-            <Col md={3}>
-              <StudentCard data={student2} />
-            </Col>
-            <Col md={3}>
-              <StudentCard data={student3} />
-            </Col>
-            <Col md={3}>
-              <StudentCard data={student4} />
-            </Col>
-            <Col md={3}>
-              <StudentCard data={student5} />
-            </Col>
-            <Col md={3}>
-              <StudentCard data={student6} />
-            </Col>
+            {students.map((student) => (
+              <Col md={3}>
+                <StudentCard
+                  data={student}
+                  onDelete={() => handleDelete(student)}
+                />
+              </Col>
+            ))}
           </Row>
         </Container>
       </div>

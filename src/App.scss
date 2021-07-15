@@ -1,5 +1,6 @@
 $theme-colors: (
   "primary": #ff6f6b,
+  "succes": rgb(33, 108, 33),
 );
 
 // imported files we will use from bootstrap library
@@ -17,6 +18,10 @@ $theme-colors: (
 
 //custom styles
 .btn-primary {
+  color: white;
+}
+
+.btn-primary:focus {
   color: white;
 }
 
